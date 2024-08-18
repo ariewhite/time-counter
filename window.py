@@ -1,48 +1,63 @@
 from customtkinter import *
-from PIL import ImageTk, Image
+from tkinter import filedialog
+from PIL import Image, ImageTk
 
 import time_counter
+import os
 
 app = CTk()
-app.geometry("500x500+1000+400")
-app.title("The bois")
-# select icon
-# app.iconbitmap(default='')
-
+app.geometry("320x420+1000+400")
+app.title("Game Launcher")
 app.resizable(False, False)
-# alpha
-# app.attributes("-alpha", 0.9)
 
-set_appearance_mode(mode_string='dark')
+set_appearance_mode(mode_string='light')
 set_default_color_theme("Sweetkind.json")
 
-frame = CTkFrame(master=app, width=300, height=400, fg_color='#243010', border_color='#ffffff')
+frame = CTkFrame(master=app, width=300, height=400, fg_color='#F0F8FF', border_color='#7FFFD4')
 frame.pack_propagate(0)
 frame.pack(expand=True, padx=(10, 0), pady=(10, 0), anchor='nw')
 
+# Глобальная переменная для хранения пути к .exe файлу
+exe_path = ""
+
 def browse_path():
-    filename = filedialog.askopenfilename()
-    return filename
-                                    
-    
-btn = CTkButton(master=frame, 
-                text='Click me', 
-                fg_color="transparent", 
-                hover_color='#4158D0', 
-                border_color='#FFCC70',
-                border_width=2, 
-                command=browse_path) \
-                .pack(anchor='w', padx=(50, 50), pady=(25,0))
+    global exe_path
+    exe_path = filedialog.askopenfilename(filetypes=[("Executable files", "*.exe")])
+    if exe_path:
+        entry.delete(0, "end")
+        entry.insert(0, exe_path)
 
-entry = CTkEntry(master=frame, 
-                placeholder_text="Select path",
-                width=200, fg_color="transparent",
-                border_color="#601E88", 
-                border_width=1, 
-                text_color='#000000') \
-                .pack(anchor='w', padx=(50, 50), pady=(25, 0))
+def launch_game():
+    if exe_path:
+        try:
+            db_name = 'time.db'
+            connect, cursor = time_counter.connect_to_db(db_name)
+            time_counter.create_table(connect, cursor)
 
+            game_name = os.path.basename(exe_path)
+            time_counter.launch_game_and_track_time(exe_path, connect, cursor, game_name)
+            print(f"Игра {game_name} успешно запущена и время учтено.")
 
+        except Exception as e:
+            print(f"Ошибка при запуске игры: {e}")
+
+btn_browse = CTkButton(master=frame, text='Выберите .exe файл', 
+                       fg_color="transparent", hover_color='#72788D', 
+                       border_color='#191919', border_width=2, 
+                       text_color='#191919', text_color_disabled="#000000",
+                       command=browse_path)
+btn_browse.pack(anchor='w', padx=(50, 50), pady=(25,0))
+
+entry = CTkEntry(master=frame, placeholder_text="Путь к .exe файлу", width=200, 
+                 fg_color="transparent", border_color="#191919", 
+                 border_width=1, text_color='#191919')
+entry.pack(anchor='w', padx=(50, 50), pady=(25, 0))
+
+btn_launch = CTkButton(master=frame, text='Запустить игру', 
+                       fg_color="transparent", hover_color='#72788D', 
+                       border_color='#191919', border_width=2,
+                       text_color='#191919',
+                       command=launch_game)
+btn_launch.pack(anchor='w', padx=(50, 50), pady=(25,0))
 
 app.mainloop()
-
