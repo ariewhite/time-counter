@@ -11,7 +11,7 @@ app.title("Game Launcher")
 app.resizable(False, False)
 
 set_appearance_mode(mode_string='light')
-set_default_color_theme("Sweetkind.json")
+set_default_color_theme("resource/Sweetkind.json")
 
 main_frame = CTkFrame(master=app, width=300, height=300, fg_color='#F0F8FF', border_color='#7FFFD4')
 main_frame.pack_propagate(0)

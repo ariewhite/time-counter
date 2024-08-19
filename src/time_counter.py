@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 
 # Установка логгирования
-log_filename = "log.log"
+log_filename = "logs/log.log"
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
                     handlers=[
                         logging.FileHandler(log_filename),
